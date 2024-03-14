@@ -129,6 +129,21 @@ Once a wake word has been detected, it can not be detected again for several sec
 
 Note that `--vad` is unnecessary when connecting to a local instance of openwakeword.
 
+## Run with docker
+You can find a ready to use docker image [here](https://hub.docker.com/repository/docker/sker65/wyoming-satellite). Just pull it with
+```sh
+docker pull sker65/wyoming-satellite:latest
+```
+To run it use
+```sh
+docker run --rm -it --device /dev/snd --group-add audio \
+  -p 10700:10700  sker65/wyoming-satellite --name my-satellite \
+  --vad  --vad-trigger-level 1 --vad-threshold 0.6  --debug \
+  --uri 'tcp://0.0.0.0:10700' \
+  --mic-command 'arecord -D default:CARD=USB -r 16000 -c 1 -f S16_LE -t raw'\
+  --snd-command 'aplay -D default:CARD=USB -r 22050 -c 1 -f S16_LE -t raw'
+```
+in this example voice activity detection is enabled and sound will only be streamed if someone speaks. Also the mic and sound comamnds use a specific device 'default:CARD=USB'. If you just what to try theh default audio device, just skip the `-D <device>` option.
 ## Sounds
 
 You can play a WAV file when the wake word is detected (locally or remotely), and when speech-to-text has completed:
